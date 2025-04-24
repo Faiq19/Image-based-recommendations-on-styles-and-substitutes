@@ -1,0 +1,4 @@
+Flask
+Flask-Cors
+joblib
+opencv-python>=4.5.0

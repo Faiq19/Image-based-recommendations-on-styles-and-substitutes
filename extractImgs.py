@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 from scipy.spatial import distance
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
-from sklearn.externals import joblib
+import joblib
 from scipy.spatial.distance import mahalanobis
 
 # plt.figure(figsize = (11,10))
@@ -129,30 +129,29 @@ for k in range(len(trainPath)):
 ################################################################################################
 
 
-# hist = np.asarray(hist)
+hist = np.asarray(hist)
 
-# covar = np.cov(hist, rowvar=0)
-# if(hist.shape[1:2]==(1,)):
-#     invcovar = np.linalg.pinv(covar.reshape(1,1))
-# else:
-#     invcovar = np.linalg.pinv(covar)
-	    
-# dis = []
-# finDis = []
-# for i in hist:
-# 	dis = []
-# 	for j in hist:
-# 		if np.array_equal(i,j) == False:
-# 			dis.append(mahalanobis(i,j,invcovar))
-# 	finDis.append(dis)
+# Manual Mahalanobis distance with pseudo-inverse
+covar = np.cov(hist, rowvar=0)
+if hist.shape[1:2] == (1,):
+    invcovar = np.linalg.pinv(covar.reshape(1,1))
+else:
+    invcovar = np.linalg.pinv(covar)
 
-# joblib.dump(finDis, 'finDis'+str(k)+'.pkl')	
-	# cov = np.cov(hist, rowvar=False)
-	# nn = NearestNeighbors(algorithm='brute',n_neighbors=10, metric='mahalanobis',metric_params=dict(V=cov))
-	# distances,indices = nn.fit(hist).kneighbors(hist)
+dis = []
+finDis = []
+for i in hist:
+    dis = []
+    for j in hist:
+        if not np.array_equal(i, j):
+            dis.append(mahalanobis(i, j, invcovar))
+    finDis.append(dis)
 
-# cluster_assignmentN = []
-# for i in range(len(finDis)):	
-# 	cluster_assignmentN.append(np.argsort(finDis[i])[1:11])
+joblib.dump(finDis, 'finDis'+str(k)+'.pkl')
 
-# joblib.dump(cluster_assignmentN, 'cluster_assignmentN'+str(k)+'.pkl')
+# Compute nearest neighbors from manual Mahalanobis distances
+cluster_assignmentN = []
+for i in range(len(finDis)):	
+    cluster_assignmentN.append(np.argsort(finDis[i])[1:11])
+
+joblib.dump(cluster_assignmentN, 'cluster_assignmentN'+'.pkl')
