@@ -3,7 +3,7 @@ import pandas as pd
 from flask import Flask , abort , jsonify,request
 import json
 from flask_cors import CORS,cross_origin
-from sklearn.externals import joblib
+import joblib
 import numpy as np
 import os
 from os.path import join
